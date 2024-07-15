@@ -4,7 +4,13 @@ const store = defineStore("piniaStore", {
     state() {
         return {
             theme: 'light',
-            isActivePage: null
+            isActivePage: null,
+            currentUser: {}
+        }
+    },
+    getters: {
+        getUserInfo(state) {
+            return ` User ID : ${state.currentUser.id} User Name : ${state.currentUser.fullName}`
         }
     },
     actions: {
@@ -21,6 +27,10 @@ const store = defineStore("piniaStore", {
         },
         setCurrenciesPage() {
             this.isActivePage = 'currencies'
+        },
+        setUserInfo(id, fullName) {
+            this.currentUser.id = id;
+            this.currentUser.fullName = fullName;
         }
     },
     persist: true

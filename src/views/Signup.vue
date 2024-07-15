@@ -44,7 +44,13 @@
   </v-form>
 </template>
 <script setup>
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { ref, reactive } from "vue";
+import store from "../store/pinia";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+const _store = store();
 
 const signUpRef = ref(null);
 const models = ref({
@@ -64,11 +70,28 @@ const rules = reactive({
   ],
 });
 
+const auth = getAuth();
+
+const createUser = async () => {
+  try {
+    const u = await createUserWithEmailAndPassword(
+      auth,
+      models.value.email,
+      models.value.password
+    );
+    _store.setUserInfo(u.user.uid, models.value.fullName);
+    signUpRef.value.reset();
+    router.replace("/");
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
 const validate = async () => {
   const { valid } = await signUpRef.value.validate();
 
   if (valid) {
-    //todo
+    createUser();
   }
 };
 </script>
