@@ -35,6 +35,12 @@
 </template>
 <script setup>
 import { ref, reactive } from "vue";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "vue-router";
+import store from "../store/pinia";
+
+const router = useRouter();
+const _store = store();
 
 const signInRef = ref(null);
 const models = ref({
@@ -49,11 +55,28 @@ const rules = reactive({
   ],
 });
 
+const auth = getAuth();
+
+const login = async () => {
+  try {
+    const u = await signInWithEmailAndPassword(
+      auth,
+      models.value.email,
+      models.value.password
+    );
+    signInRef.value.reset();
+    _store.setUserInfo(u.user.uid, models.value.fullName);
+    router.replace("/");
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
 const validate = async () => {
   const { valid } = await signInRef.value.validate();
 
   if (valid) {
-    //todo
+    login();
   }
 };
 </script>

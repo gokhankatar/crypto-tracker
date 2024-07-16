@@ -5,6 +5,7 @@ import HomeView from "../views/HomeView.vue";
 import Signin from "../views/Signin.vue";
 import Signup from "../views/Signup.vue";
 import Currencies from "../views/Currencies.vue";
+import { getAuth } from "firebase/auth";
 
 const routes = [
     {
@@ -13,7 +14,7 @@ const routes = [
         meta: {
             title: 'Home',
             layout: MainLayout,
-            admin: true
+            public: false
         }
     },
     {
@@ -22,7 +23,7 @@ const routes = [
         meta: {
             title: 'Cryptocurrencies',
             layout: MainLayout,
-            admin: true
+            public: false
         }
     },
     {
@@ -30,7 +31,8 @@ const routes = [
         component: Signup,
         meta: {
             title: 'Register',
-            layout: AuthLayout
+            layout: AuthLayout,
+            public: true
         }
     },
     {
@@ -38,7 +40,8 @@ const routes = [
         component: Signin,
         meta: {
             title: 'Login',
-            layout: AuthLayout
+            layout: AuthLayout,
+            public: true
         }
     }
 ];
@@ -51,6 +54,20 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     document.title = `Crypto Tracker | ${to.meta.title}`;
     next();
+});
+
+// router guard
+router.beforeEach((to, from, next) => {
+    if (to.meta.public) {
+        next();
+    } else {
+        let auth = getAuth();
+        if (auth.currentUser) {
+            next();
+        } else {
+            next('/signin')
+        }
+    }
 });
 
 export default router;

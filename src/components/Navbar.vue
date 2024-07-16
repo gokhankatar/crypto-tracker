@@ -15,6 +15,7 @@
 
     <div class="actions d-flex ga-3 justify-center align-center">
       <span
+        v-if="isUser"
         @click="goToCurrencies"
         :class="_store.isActivePage === 'currencies' ? 'activeItem' : ''"
         class="list-item transition rounded-lg pa-2 text-subtitle-1 cursor-pointer"
@@ -22,11 +23,15 @@
       >
       <span
         @click="goToAuth"
+        v-if="!isUser"
         :class="_store.isActivePage === 'auth' ? 'activeItem' : ''"
         class="list-item transition rounded-lg pa-2 text-subtitle-1 cursor-pointer"
         >Register / Login</span
       >
-      <span class="list-item transition rounded-lg pa-2 text-subtitle-1 cursor-pointer"
+      <span
+        v-if="isUser"
+        @click="logOut"
+        class="list-item transition rounded-lg pa-2 text-subtitle-1 cursor-pointer"
         >Logout</span
       >
 
@@ -40,11 +45,14 @@
   <slot />
 </template>
 <script setup>
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import store from "../store/pinia";
+import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 
 const _store = store();
 const router = useRouter();
+const isUser = ref(false);
 
 const goToHome = () => {
   _store.setHomePage();
@@ -59,6 +67,27 @@ const goToAuth = () => {
 const goToCurrencies = () => {
   _store.setCurrenciesPage();
   router.replace("/currencies");
+};
+
+const auth = getAuth();
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    console.log("LOGIN OLMUS", user);
+    isUser.value = true;
+  } else {
+    console.log("KULLANICI YOK", user);
+    isUser.value = false;
+  }
+});
+
+const logOut = async () => {
+  try {
+    await signOut(auth);
+    router.replace("/signin");
+  } catch (error) {
+    console.error(error.message);
+  }
 };
 </script>
 
