@@ -8,7 +8,7 @@
         src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/800px-Bitcoin.svg.png"
         :width="30"
       />
-      <span class="text-subtitle-1 text-md-h5 font-weight-bold">Crypto Tracker</span>
+      <span class="d-none d-sm-flex text-subtitle-1 text-md-h5 font-weight-bold">Crypto Tracker</span>
     </div>
 
     <v-responsive />
@@ -73,10 +73,8 @@ const auth = getAuth();
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    console.log("LOGIN OLMUS", user);
     isUser.value = true;
   } else {
-    console.log("KULLANICI YOK", user);
     isUser.value = false;
   }
 });
